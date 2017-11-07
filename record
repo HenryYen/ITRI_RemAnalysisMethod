@@ -1,0 +1,166 @@
+2 feature : x,y
+11 feature : x,y + 3BS
+20 feature : x,y + 6BS unordered
+
+*NN regression
+---
+[MSE,R2]: 7.889  0.634
+[feature size]:2 feature
+[data size]:1000.1000
+[time]:2*30 sec
+---
+50.533,-1.339 / 8.728,0.596 (really unstable)
+2 feature
+2000.1000
+3*30 sec
+---
+4.042   0.801
+2 feature
+5000.1000
+7*30 sec
+---
+3.196   0.863
+2 feature
+16000.1000
+20*30 sec
+---
+3.996   0.829
+20 feature  (unordered)
+16000.1000
+25*25 sec 
+---
+7.941   0.632  (stable)
+11 feature
+2000.1000
+3*40 sec
+---
+0.660   0.967
+11 feature
+5000.1000
+7*40 sec
+---
+0.632   0.973
+11 feature
+16000.1000
+20*40 sec
+---
+3.897   0.808
+20 feature (ordered)
+5000.1000
+7*40 sec
+---
+1.048   0.948
+14 feature
+5000.1000
+7*40 sec
+---
+6.967   0.656   (crash sometimes, like variance=-0.01)
+2 fea
+5000.2000
+7*30 s
+---
+6.324,0.688/ 4.320,0.787
+20 feature (unorder)
+5000.2000
+
+
+
+*Linear regression
+Accaracy is strongly related to what attribute we use in training data.
+---
+17.123   0.206
+2 feature
+1000.1000
+1 sec
+---
+15.779   0.222
+2 feature
+5000.1000
+1 sec
+---
+18.305   0.218
+2 feature
+16000.1000
+1 sec
+---
+18.305   0.218
+20 feature (unordered)
+16000.1000
+1 sec
+---
+15.091   0.301
+11 feature
+2000.1000
+1 sec
+---
+13.134   0.326
+11 feature
+5000.1000
+1 sec
+---
+15.257   0.348
+11 feature
+16000.1000
+---
+15.020   0.259
+5 fea
+5000.2000
+---
+13.829   0.318
+8 fea
+5000.2000
+---
+13.134   0.352
+11 fea
+5000.2000
+---
+12.979   0.360
+14 feature
+5000.2000
+---
+12.916   0.363
+17 fea & 20 fea
+5000.2000
+---
+5000.2000
+highest
+numpy : 12.916  0.363
+sklearn : 
+ 
+
+
+
+
+
+
+
+
+
+
+
+[Model 2]
+*NN
+---
+0.659,0.949 / 1.860,0.855
+20 feature (unorder)
+5000.2000
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

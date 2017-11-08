@@ -10,20 +10,23 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from sklearn.ensemble import RandomForestRegressor
-
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import statsmodels.api as sm
+
     
 path = './data'
-fn_train_data = path + '/MDT_fix_user.csv'
+fn_train_data = path + '/MDT.csv'
 #fn_test_data = path + '/test.in'
 #fn_output = 'out.csv'
 fn_model = 'model1'
 
-train_data_size = 500
+train_data_size = 3000
 test_data_size = 3000
 batch_size = 16
 nb_epoch = 30
-nb_feature = 20      # feature : x, y
+nb_feature = 2      # feature : x, y
 
 
 def load_train_data():
@@ -92,6 +95,23 @@ def add_constant(X):
     X = np.append(X, constant, axis=1)
     return X
 
+def get_heapmap(model):     # specialized drawing function for ITRI building 51
+    x_resolution = 104
+    y_resolution = 26
+    xaxis = np.linspace(0.,104.,x_resolution)
+    yaxis = np.linspace(0.,26.,y_resolution)  
+    x, y = np.meshgrid(xaxis, yaxis)
+    pos = np.column_stack((np.reshape(x, x_resolution*y_resolution), np.reshape(y, x_resolution*y_resolution)))  # [[x1, y1], [x2, y2]...]
+    z = model.predict(pos)
+    z = np.reshape(z, (y_resolution, x_resolution))
+    
+    plt.contourf(x, y, z, 1000)                             
+    plt.colorbar() 
+    plt.show()
+    plt.savefig('heapmap')
+    
+    
+
     
 if __name__ == '__main__':
     try:
@@ -101,16 +121,16 @@ if __name__ == '__main__':
 
         
         #model = build_NN_model(X_train, y_train)  
-        model = build_non_linear_model(X_train, y_train)       
+        #model = build_non_linear_model(X_train, y_train)       
         #model.save(fn_model)             
-        #model = build_RFReg_model(X_train, y_train)
+        model = build_RFReg_model(X_train, y_train)
         #model = build_LinReg_model_sk(X_train, y_train, X_test)         
         #model = build_LinReg_model_sm(X_train, y_train, X_test)         
         #model = build_LinReg_model_numpy(X_train, y_train, X_test)  
         #X_test = add_constant(X_test)   
         #y_pred = np.dot(X_test, model)      # only for numpy linear reg
-
-
+        
+        get_heapmap(model)
         y_pred = model.predict(X_test)
         print "---Model 1--- %s features" %nb_feature
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))

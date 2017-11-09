@@ -22,7 +22,7 @@ fn_train_data = path + '/MDT.csv'
 #fn_output = 'out.csv'
 fn_model = 'model1'
 
-train_data_size = 3000
+train_data_size = 100
 test_data_size = 3000
 batch_size = 16
 nb_epoch = 30
@@ -105,7 +105,7 @@ def get_heapmap(model):     # specialized drawing function for ITRI building 51
     z = model.predict(pos)
     z = np.reshape(z, (y_resolution, x_resolution))
     
-    plt.contourf(x, y, z, 1000)                             
+    plt.contourf(x, y, z, 100)                             
     plt.colorbar() 
     plt.show()
     plt.savefig('heapmap')

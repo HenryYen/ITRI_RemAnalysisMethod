@@ -9,6 +9,7 @@ from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 import matplotlib
 matplotlib.use('Agg')
@@ -22,10 +23,10 @@ fn_train_data = path + '/MDT.csv'
 #fn_output = 'out.csv'
 fn_model = 'model1'
 
-train_data_size = 100
+train_data_size = 500
 test_data_size = 3000
 batch_size = 16
-nb_epoch = 30
+nb_epoch = 150
 nb_feature = 2      # feature : x, y
 
 
@@ -39,6 +40,7 @@ def load_train_data():
     
 
 def build_NN_model(X_train, y_train):     
+    print "+++Deep NN"
     model = Sequential()
     model.add(Dense(output_dim=256, input_dim=nb_feature))
     model.add(Activation("relu"))
@@ -53,7 +55,8 @@ def build_NN_model(X_train, y_train):
     model.fit(X_train, y_train, nb_epoch=nb_epoch, batch_size=batch_size,  shuffle=True)
     return model
 
-def build_non_linear_model(X_train, y_train):   #shallow NN, "non-deep" NN
+def build_non_linear_model(X_train, y_train):   #shallow NN, "non-deep" NN    
+    print "+++Shallow NN"
     model = Sequential()    # first input layer
     model.add(Dense(128, activation='relu', input_dim = nb_feature))  #2nd hidden layer with x neurons
     model.add(Dense(128, activation='relu'))    # 3rd hidden layer
@@ -62,7 +65,14 @@ def build_non_linear_model(X_train, y_train):   #shallow NN, "non-deep" NN
     model.fit(X_train, y_train, nb_epoch=nb_epoch, batch_size=batch_size,  shuffle=True)
     return model
 
+def build_DTReg_model(X_train, y_train):
+    print "+++Decision Tree"
+    model = DecisionTreeRegressor(max_depth=30)
+    model.fit(X_train, y_train)   
+    return model
+
 def build_RFReg_model(X_train, y_train):
+    print "+++Random Forest"
     model = RandomForestRegressor(max_depth=30, random_state=2)
     model.fit(X_train, y_train)   
     return model
@@ -105,7 +115,7 @@ def get_heapmap(model):     # specialized drawing function for ITRI building 51
     z = model.predict(pos)
     z = np.reshape(z, (y_resolution, x_resolution))
     
-    plt.contourf(x, y, z, 100)                             
+    plt.contourf(x, y, z, 1000, cmap='gist_heat_r')                             
     plt.colorbar() 
     plt.show()
     plt.savefig('heapmap')
@@ -123,6 +133,7 @@ if __name__ == '__main__':
         #model = build_NN_model(X_train, y_train)  
         #model = build_non_linear_model(X_train, y_train)       
         #model.save(fn_model)             
+        #model = build_DTReg_model(X_train, y_train)
         model = build_RFReg_model(X_train, y_train)
         #model = build_LinReg_model_sk(X_train, y_train, X_test)         
         #model = build_LinReg_model_sm(X_train, y_train, X_test)         
@@ -130,12 +141,11 @@ if __name__ == '__main__':
         #X_test = add_constant(X_test)   
         #y_pred = np.dot(X_test, model)      # only for numpy linear reg
         
-        get_heapmap(model)
         y_pred = model.predict(X_test)
         print "---Model 1--- %s features" %nb_feature
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
         print('[R2]: %.3f' % r2_score(y_test, y_pred))  
-        #print('[Coefficients]: \n', model.coef_)
+        get_heapmap(model)
         
     
     except KeyboardInterrupt:           

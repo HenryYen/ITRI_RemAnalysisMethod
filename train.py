@@ -6,7 +6,7 @@ from keras.optimizers import Adam
 from keras.utils import np_utils
 from sklearn.preprocessing import Normalizer
 from sklearn import linear_model
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score, mean_absolute_error
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from sklearn.tree import DecisionTreeRegressor
@@ -23,7 +23,7 @@ fn_train_data = path + '/MDT.csv'
 #fn_output = 'out.csv'
 fn_model = 'model1'
 
-train_data_size =1200
+train_data_size =500
 test_data_size = 3000
 batch_size = 16
 nb_epoch = 150
@@ -145,6 +145,8 @@ if __name__ == '__main__':
         print "---Model 1--- %s features" %nb_feature
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
         print('[R2]: %.3f' % r2_score(y_test, y_pred))  
+        print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred)) 
+        #print('[MAE]: %.3f' % mean_absolute_error(y_test, y_pred))   
         #get_heapmap(model)
         
     

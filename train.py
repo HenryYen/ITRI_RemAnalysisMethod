@@ -23,7 +23,7 @@ fn_train_data = path + '/MDT.csv'
 #fn_output = 'out.csv'
 fn_model = 'model1'
 
-train_data_size = 500
+train_data_size =1200
 test_data_size = 3000
 batch_size = 16
 nb_epoch = 150
@@ -115,7 +115,7 @@ def get_heapmap(model):     # specialized drawing function for ITRI building 51
     z = model.predict(pos)
     z = np.reshape(z, (y_resolution, x_resolution))
     
-    plt.contourf(x, y, z, 1000, cmap='gist_heat_r')                             
+    plt.contourf(x, y, z, 1000, cmap='jet')                             
     plt.colorbar() 
     plt.show()
     plt.savefig('heapmap')
@@ -145,7 +145,7 @@ if __name__ == '__main__':
         print "---Model 1--- %s features" %nb_feature
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
         print('[R2]: %.3f' % r2_score(y_test, y_pred))  
-        get_heapmap(model)
+        #get_heapmap(model)
         
     
     except KeyboardInterrupt:           

@@ -38,3 +38,16 @@ def draw_bitmap(X_train):          # draw the location distribution of user repo
     plt.savefig('bitmap.png', dpi=500)
     plt.show()
 
+def draw_importance_forest(model, feature_no):   #draw feature importance of forest
+    print model.feature_importances_ 
+    importances = model.feature_importances_   
+    std = np.std([tree.feature_importances_ for tree in model.estimators_], axis=0)
+    indices = np.argsort(importances)[::-1]
+    plt.figure()
+    plt.title("Feature importances")
+    plt.bar(range(feature_no), importances[indices], color="r", yerr=std[indices], align="center")
+    plt.xticks(range(feature_no), indices)
+    plt.xlim([-1, feature_no])
+    plt.savefig('importance.png', dpi=300)
+    plt.show()
+

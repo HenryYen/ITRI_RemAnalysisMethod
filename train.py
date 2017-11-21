@@ -12,22 +12,23 @@ from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 import statsmodels.api as sm
-from Utility import draw_heatmap, draw_bitmap
+from Utility import draw_heatmap, draw_bitmap, draw_importance_forest
+from sklearn.cross_validation import cross_val_score
 
     
 path = './data'
-fn_train_data = path + '/MDT_fix_user.csv'
+fn_train_data = path + '/MDT.csv'
 fn_model = 'model1'
 
-train_data_size = 126
+train_data_size = 300
 test_data_size = 3000
 nb_epoch = 250
-nb_feature = 2      # feature : x, y
+nb_feature = 11      # feature : x, y
 
 
 def load_train_data():
     dataset = pd.read_csv(fn_train_data).values
-    X_train = dataset[:train_data_size, 1:1+nb_feature]   
+    X_train = dataset[:train_data_size, 1:1+nb_feature]     
     y_train = dataset[:train_data_size, -2]   
     X_test = dataset[train_data_size:train_data_size+test_data_size, 1:1+nb_feature]   
     y_test = dataset[train_data_size:train_data_size+test_data_size, -2]  
@@ -116,10 +117,13 @@ if __name__ == '__main__':
         print "---Model 1--- %s features" %nb_feature
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
         print('[R2]: %.3f' % r2_score(y_test, y_pred))  
-        print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred)) 
-        draw_heatmap(model)
-        draw_bitmap(X_train)
-        
+        print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
+        #draw_importance_forest(model, X_train.shape[1])
+        #draw_heatmap(model)
+        #draw_bitmap(X_train)
+
+        #model = RandomForestRegressor(n_estimators=100, max_depth=30, random_state=2)
+        #print np.mean(cross_val_score(model, X_train, y_train, cv=10))        
     
     except KeyboardInterrupt:           
         model.save(fn_model)

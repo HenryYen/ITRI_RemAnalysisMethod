@@ -3,6 +3,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.cross_validation import cross_val_score
 
 
 map_size = [104, 26]
@@ -18,7 +20,7 @@ def draw_heatmap(model):     # specialized drawing function for ITRI building 51
     z = np.reshape(z, (y_resolution, x_resolution))    
     plt.contourf(x, y, z, 500, cmap='jet')                             
     plt.colorbar() 
-    plt.savefig('heapmap', dpi=500)
+    plt.savefig('heapmap', dpi=200)
     plt.show()
 
 
@@ -30,12 +32,12 @@ def draw_bitmap(X_train):          # draw the location distribution of user repo
     ax.xaxis.set_minor_locator(minorLocator)
 
     for i in range(len(X_train)):        
-        plt.plot(round(X_train[i][0])+0.5, round(X_train[i][1])+0.5, color='b', marker='d')  #shift x, y by 0.5 unit
+        plt.plot(round(X_train[i][0])+0.5, round(X_train[i][1])+0.5, color='b', marker='.')  #shift x, y by 0.5 unit
     plt.grid(which = 'minor', color='black', linestyle='-', linewidth=0.5)
     plt.xlabel('x')
     plt.ylabel('y')
     plt.title('Location of user report')
-    plt.savefig('bitmap.png', dpi=500)
+    plt.savefig('bitmap.png', dpi=200)
     plt.show()
 
 def draw_importance_forest(model, feature_no):   #draw feature importance of forest
@@ -48,6 +50,16 @@ def draw_importance_forest(model, feature_no):   #draw feature importance of for
     plt.bar(range(feature_no), importances[indices], color="r", yerr=std[indices], align="center")
     plt.xticks(range(feature_no), indices)
     plt.xlim([-1, feature_no])
-    plt.savefig('importance.png', dpi=300)
+    plt.savefig('importance.png', dpi=200)
     plt.show()
+
+def cross_validation(X_train, y_train):
+    n_estimators = 100
+    print "+++Random Forest consisting of " + str(n_estimators) + " trees"
+    model = RandomForestRegressor(n_estimators=n_estimators, max_depth=30, random_state=2)
+    r2_score = np.mean(cross_val_score(model, X_train, y_train, cv=10, scoring='r2'))
+    mse_score = np.mean(cross_val_score(model, X_train, y_train, cv=10, scoring='neg_mean_squared_error')) * -1    
+    print('[MSE]: %.3f' % mse_score)
+    print('[R2]: %.3f' % r2_score)  
+
 

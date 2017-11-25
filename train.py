@@ -12,7 +12,7 @@ from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 import statsmodels.api as sm
-from Utility import draw_heatmap, draw_bitmap, draw_importance_forest
+from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_validation
 from sklearn.cross_validation import cross_val_score
 
     
@@ -20,9 +20,9 @@ path = './data'
 fn_train_data = path + '/MDT.csv'
 fn_model = 'model1'
 
-train_data_size = 500
+train_data_size = 300
 test_data_size = 3000
-nb_epoch = 250
+nb_epoch = 50
 nb_feature = 11      # feature : x, y
 
 
@@ -36,22 +36,18 @@ def load_train_data():
     
 
 
-def build_NN_model(X_train, y_train):     
+def build_dNN_model(X_train, y_train):     
     print "+++Deep NN"
-    model = Sequential()
-    model.add(Dense(output_dim=256, input_dim=nb_feature))
-    model.add(Activation("relu"))
-    model.add(Dense(512))
-    model.add(Activation('relu'))
-    model.add(Dense(512))
-    model.add(Activation('relu'))
-    model.add(Dense(512))
-    model.add(Activation('relu'))
-    model.add(Dense(1))
-    model.compile(loss='mean_squared_error', optimizer='adam')
+    model = Sequential()    
+    model.add(Dense(128, activation='relu', input_dim = nb_feature)) 
+    model.add(Dense(128, activation='relu'))    
+    model.add(Dense(128, activation='relu'))    
+    model.add(Dense(128, activation='relu'))    
+    model.add(Dense(1))     
+    model.compile(loss='mean_squared_error', optimizer='adam')    
     model.fit(X_train, y_train, nb_epoch=nb_epoch, batch_size=16,  shuffle=True)
     return model
-def build_non_linear_model(X_train, y_train):   #shallow NN, "non-deep" NN    
+def build_sNN_model(X_train, y_train):   #shallow NN, "non-deep" NN    
     print "+++Shallow NN"
     model = Sequential()    # first input layer
     model.add(Dense(128, activation='relu', input_dim = nb_feature))  #2nd hidden layer with x neurons
@@ -68,8 +64,9 @@ def build_DTReg_model(X_train, y_train):
     model.fit(X_train, y_train)   
     return model
 def build_RFReg_model(X_train, y_train):
-    print "+++Random Forest"
-    model = RandomForestRegressor(n_estimators=100, max_depth=30, random_state=2)
+    n_estimators = 100
+    print "+++Random Forest consisting of " + str(n_estimators) + " trees"
+    model = RandomForestRegressor(n_estimators=n_estimators, max_depth=30, random_state=2)
     model.fit(X_train, y_train)   
     return model
 
@@ -102,8 +99,8 @@ if __name__ == '__main__':
         (X_train, y_train, X_test, y_test) = load_train_data()        
         print '***begin to train...'
         
-        #model = build_NN_model(X_train, y_train)  
-        #model = build_non_linear_model(X_train, y_train)       
+        #model = build_dNN_model(X_train, y_train)  
+        #model = build_sNN_model(X_train, y_train)       
         #model.save(fn_model)             
         #model = build_DTReg_model(X_train, y_train)
         model = build_RFReg_model(X_train, y_train)
@@ -113,17 +110,17 @@ if __name__ == '__main__':
         #X_test = add_constant(X_test)   
         #y_pred = np.dot(X_test, model)      # only for numpy linear reg
         
+        
         y_pred = model.predict(X_test)
         print "---Model 1--- %s features" %nb_feature
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
         print('[R2]: %.3f' % r2_score(y_test, y_pred))  
-        print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
-        #draw_importance_forest(model, X_train.shape[1])
+        
+        #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
+        #draw_importance_forest(model, nb_feature)
         #draw_heatmap(model)
-        #draw_bitmap(X_train)
-
-        #model = RandomForestRegressor(n_estimators=100, max_depth=30, random_state=2)
-        #print np.mean(cross_val_score(model, X_train, y_train, cv=10))        
+        #draw_bitmap(X_train)        
+        #cross_validation(X_train, y_train)   
     
     except KeyboardInterrupt:           
         model.save(fn_model)

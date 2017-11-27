@@ -23,7 +23,7 @@ fn_model = 'model1'
 train_data_size = 300
 test_data_size = 3000
 nb_epoch = 50
-nb_feature = 2      # feature : x, y
+nb_feature = 11      # feature : x, y
 
 
 def load_train_data():
@@ -114,11 +114,10 @@ if __name__ == '__main__':
         y_pred = model.predict(X_test)
         print "---Model 1--- %s features" %nb_feature
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
-        print('[R2]: %.3f' % r2_score(y_test, y_pred)) 
-        
+        print('[R2]: %.3f' % r2_score(y_test, y_pred))         
         #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
         #draw_importance_forest(model, nb_feature)
-        draw_heatmap(model)
+        #draw_heatmap(model, nb_feature)
         #draw_bitmap(X_train)        
         #cross_validation(X_train, y_train)   
     

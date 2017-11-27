@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -7,17 +8,33 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.cross_validation import cross_val_score
 
 
+
+path = './data'
+fn_heatmap_pixel = path + '/heatmap_pixel_1m.csv'
 map_size = [104, 26]
 
-def draw_heatmap(model):     # specialized drawing function for ITRI building 51
+
+def load_pixel_data(nb_feature):
+    dataset = pd.read_csv(fn_heatmap_pixel).values
+    pixel = dataset[:, :nb_feature]     
+    return pixel
+
+
+def draw_heatmap(model, nb_feature):     # specialized drawing function for ITRI building 51
     x_resolution = map_size[0]
     y_resolution = map_size[1]
-    xaxis = np.linspace(0., x_resolution, x_resolution)
-    yaxis = np.linspace(0., y_resolution, y_resolution)  
+    xaxis = np.linspace(0., x_resolution, x_resolution+1)   # why +1? there are 105 point between 0~104
+    yaxis = np.linspace(0., y_resolution, y_resolution+1) 
     x, y = np.meshgrid(xaxis, yaxis)
-    pos = np.column_stack((np.reshape(x, x_resolution*y_resolution), np.reshape(y, x_resolution*y_resolution)))  # [[x1, y1], [x2, y2]...]   
+    pixel_pos = load_pixel_data(nb_feature)
+    z = model.predict(pixel_pos)
+    z = np.reshape(z, (y_resolution+1, x_resolution+1)) 
+    """ 
+    pos = np.column_stack((np.reshape(x, (x_resolution+1)*(y_resolution+1)), np.reshape(y, (x_resolution+1)*(y_resolution+1))))  # [[x1, y1], [x2, y2]...]   
+    print pos[:10]
     z = model.predict(pos)
-    z = np.reshape(z, (y_resolution, x_resolution))    
+    z = np.reshape(z, ((y_resolution+1), (x_resolution+1)))   
+    """
     plt.contourf(x, y, z, 500, cmap='jet')                             
     plt.colorbar() 
     plt.savefig('heapmap', dpi=200)

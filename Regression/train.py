@@ -20,7 +20,7 @@ path = './data'
 fn_train_data = path + '/MDT.csv'
 fn_model = 'model1'
 
-train_data_size = 300
+train_data_size = 3500
 test_data_size = 3000
 nb_epoch = 50
 nb_feature = 11      # feature : x, y
@@ -117,8 +117,8 @@ if __name__ == '__main__':
         print('[R2]: %.3f' % r2_score(y_test, y_pred))         
         #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
         #draw_importance_forest(model, nb_feature)
-        #draw_heatmap(model, nb_feature)
-        #draw_bitmap(X_train)        
+        draw_heatmap(model, nb_feature)
+        draw_bitmap(X_train)        
         #cross_validation(X_train, y_train)   
     
     except KeyboardInterrupt:           

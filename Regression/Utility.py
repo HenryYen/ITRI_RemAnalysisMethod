@@ -70,7 +70,7 @@ def draw_importance_forest(model, feature_no):   #draw feature importance of for
     plt.savefig('importance.png', dpi=200)
     plt.show()
 
-def cross_validation(X_train, y_train):
+def cross_validation_RF(X_train, y_train):
     n_estimators = 100
     print "+++Random Forest consisting of " + str(n_estimators) + " trees"
     model = RandomForestRegressor(n_estimators=n_estimators, max_depth=30, random_state=2)
@@ -78,5 +78,7 @@ def cross_validation(X_train, y_train):
     mse_score = np.mean(cross_val_score(model, X_train, y_train, cv=10, scoring='neg_mean_squared_error')) * -1    
     print('[MSE]: %.3f' % mse_score)
     print('[R2]: %.3f' % r2_score)  
+
+
 
 

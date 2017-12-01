@@ -12,7 +12,7 @@ from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 import statsmodels.api as sm
-from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_validation
+from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_validation_RF
 from sklearn.cross_validation import cross_val_score
 
     
@@ -20,18 +20,20 @@ path = './data'
 fn_train_data = path + '/MDT.csv'
 fn_model = 'model1'
 
-train_data_size = 3500
+train_data_size = 300
 test_data_size = 3000
 nb_epoch = 50
 nb_feature = 11      # feature : x, y
+is_multioutput = True
 
 
 def load_train_data():
+    tail = None if is_multioutput else -1
     dataset = pd.read_csv(fn_train_data).values
     X_train = dataset[:train_data_size, 1:1+nb_feature]     
-    y_train = dataset[:train_data_size, -2]   
+    y_train = dataset[:train_data_size, -2:tail]   
     X_test = dataset[train_data_size:train_data_size+test_data_size, 1:1+nb_feature]   
-    y_test = dataset[train_data_size:train_data_size+test_data_size, -2]  
+    y_test = dataset[train_data_size:train_data_size+test_data_size, -2:tail]  
     return (X_train, y_train, X_test, y_test)
     
 
@@ -114,12 +116,12 @@ if __name__ == '__main__':
         y_pred = model.predict(X_test)
         print "---Model 1--- %s features" %nb_feature
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
-        print('[R2]: %.3f' % r2_score(y_test, y_pred))         
+        print('[R2]: %.3f' % r2_score(y_test, y_pred)) 
         #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
         #draw_importance_forest(model, nb_feature)
-        draw_heatmap(model, nb_feature)
-        draw_bitmap(X_train)        
-        #cross_validation(X_train, y_train)   
+        #draw_heatmap(model, nb_feature)
+        #draw_bitmap(X_train)        
+        #cross_validation_RF(X_train, y_train)   
     
     except KeyboardInterrupt:           
         model.save(fn_model)

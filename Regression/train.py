@@ -11,9 +11,8 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
-import statsmodels.api as sm
-from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_validation_RF
-from sklearn.cross_validation import cross_val_score
+#import statsmodels.api as sm
+from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_val_RF, cross_val_Lin
 
     
 path = './data'
@@ -24,7 +23,7 @@ train_data_size = 300
 test_data_size = 3000
 nb_epoch = 50
 nb_feature = 11      # feature : x, y
-is_multioutput = True
+is_multioutput = False    # (single-output target:serving Rx) / (multi-output target:serving Rx+neighbor Rx)
 
 
 def load_train_data():
@@ -34,6 +33,9 @@ def load_train_data():
     y_train = dataset[:train_data_size, -2:tail]   
     X_test = dataset[train_data_size:train_data_size+test_data_size, 1:1+nb_feature]   
     y_test = dataset[train_data_size:train_data_size+test_data_size, -2:tail]  
+    if not is_multioutput: 
+        y_train = np.ravel(y_train)
+        y_test = np.ravel(y_test)
     return (X_train, y_train, X_test, y_test)
     
 
@@ -98,9 +100,10 @@ def add_constant(X):
 if __name__ == '__main__':
     try:
         print '***load data...'
-        (X_train, y_train, X_test, y_test) = load_train_data()        
-        print '***begin to train...'
-        
+        (X_train, y_train, X_test, y_test) = load_train_data()    
+    
+
+        print '***begin to train...'        
         #model = build_dNN_model(X_train, y_train)  
         #model = build_sNN_model(X_train, y_train)       
         #model.save(fn_model)             
@@ -114,14 +117,16 @@ if __name__ == '__main__':
         
         
         y_pred = model.predict(X_test)
-        print "---Model 1--- %s features" %nb_feature
+        print "---%s Model--- %s features" %(('Multi-output' if is_multioutput else 'Single-output'), nb_feature)
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
         print('[R2]: %.3f' % r2_score(y_test, y_pred)) 
+        
         #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
         #draw_importance_forest(model, nb_feature)
         #draw_heatmap(model, nb_feature)
         #draw_bitmap(X_train)        
-        #cross_validation_RF(X_train, y_train)   
+        #cross_val_RF(X_train, y_train) 
+        #cross_val_Lin(X_train, y_train)     
     
     except KeyboardInterrupt:           
         model.save(fn_model)

@@ -1,18 +1,16 @@
 import numpy as np
 import pandas as pd
 from keras.models import Sequential, load_model
-from keras.layers import Dense, Activation , Dropout
+from keras.layers import Dense, Activation
 from keras.optimizers import Adam
-from keras.utils import np_utils
-from sklearn.preprocessing import Normalizer
 from sklearn import linear_model
-from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score, mean_absolute_error
+from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 #import statsmodels.api as sm
-from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_val_RF, cross_val_Lin
+from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_val_RF, cross_val_Lin, cross_val_NN
 
     
 path = './data'
@@ -21,9 +19,9 @@ fn_model = 'model1'
 
 train_data_size = 300
 test_data_size = 3000
-nb_epoch = 50
-nb_feature = 11      # feature : x, y
-is_multioutput = False    # (single-output target:serving Rx) / (multi-output target:serving Rx+neighbor Rx)
+nb_epoch = 200
+nb_feature = 11         # feature : x, y
+is_multioutput = False  # (single-output target:serving Rx) / (multi-output target:serving Rx+neighbor Rx)
 
 
 def load_train_data():
@@ -47,18 +45,18 @@ def build_dNN_model(X_train, y_train):
     model.add(Dense(128, activation='relu'))    
     model.add(Dense(128, activation='relu'))    
     model.add(Dense(128, activation='relu'))    
-    model.add(Dense(1))     
+    model.add(Dense(2 if is_multioutput else 1))     
     model.compile(loss='mean_squared_error', optimizer='adam')    
-    model.fit(X_train, y_train, nb_epoch=nb_epoch, batch_size=16,  shuffle=True)
+    model.fit(X_train, y_train, nb_epoch=nb_epoch, batch_size=16, shuffle=True)
     return model
 def build_sNN_model(X_train, y_train):   #shallow NN, "non-deep" NN    
     print "+++Shallow NN"
     model = Sequential()    # first input layer
     model.add(Dense(128, activation='relu', input_dim = nb_feature))  #2nd hidden layer with x neurons
     model.add(Dense(128, activation='relu'))    # 3rd hidden layer
-    model.add(Dense(1))     # output layer
+    model.add(Dense(2 if is_multioutput else 1))     # output layer
     model.compile(loss='mean_squared_error', optimizer='adam')    
-    model.fit(X_train, y_train, nb_epoch=nb_epoch, batch_size=16,  shuffle=True)
+    model.fit(X_train, y_train, nb_epoch=nb_epoch, batch_size=16, shuffle=True)
     return model
 
 
@@ -77,7 +75,6 @@ def build_RFReg_model(X_train, y_train):
 
 def build_LinReg_model_sk(X_train, y_train, X_test): 
     print "+++Linear regression"
-    X_train = add_constant(X_train)   
     model = linear_model.LinearRegression()
     model.fit(X_train, y_train)   
     return model
@@ -112,7 +109,6 @@ if __name__ == '__main__':
         #model = build_LinReg_model_sk(X_train, y_train, X_test)         
         #model = build_LinReg_model_sm(X_train, y_train, X_test)         
         #model = build_LinReg_model_numpy(X_train, y_train, X_test)  
-        #X_test = add_constant(X_test)   
         #y_pred = np.dot(X_test, model)      # only for numpy linear reg
         
         
@@ -120,13 +116,15 @@ if __name__ == '__main__':
         print "---%s Model--- %s features" %(('Multi-output' if is_multioutput else 'Single-output'), nb_feature)
         print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
         print('[R2]: %.3f' % r2_score(y_test, y_pred)) 
+        #print y_pred[:10]
         
         #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
         #draw_importance_forest(model, nb_feature)
         #draw_heatmap(model, nb_feature)
         #draw_bitmap(X_train)        
         #cross_val_RF(X_train, y_train) 
-        #cross_val_Lin(X_train, y_train)     
+        #cross_val_Lin(X_train, y_train)   
+        #cross_val_NN(X_train, y_train, nb_epoch)     
     
     except KeyboardInterrupt:           
         model.save(fn_model)

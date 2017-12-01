@@ -6,13 +6,18 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import linear_model
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_validate
+from keras.wrappers.scikit_learn import KerasRegressor
+from keras.models import Sequential
+from keras.layers import Dense, Activation 
+from keras.optimizers import Adam
 
 
 
 path = './data'
 fn_heatmap_pixel = path + '/heatmap_pixel_1m.csv'
 map_size = [104, 26]
+nb_fold = 10
 
 
 def load_pixel_data(nb_feature):
@@ -71,21 +76,39 @@ def draw_importance_forest(model, feature_no):   #draw feature importance of for
     plt.savefig('importance.png', dpi=200)
     plt.show()
 
+def get_10cv_score(model, X_train, y_train):
+    scoring = {'mse':'neg_mean_squared_error', 'r2':'r2'}
+    scores = cross_validate(model, X_train, y_train, cv=nb_fold, scoring=scoring)
+    print('[MSE]: %.3f' % -scores['test_mse'].mean())
+    print('[R2] : %.3f' % scores['test_r2'].mean()) 
+
 def cross_val_RF(X_train, y_train):
     n_estimators = 100
     print "+++Random Forest consisting of " + str(n_estimators) + " trees"
     model = RandomForestRegressor(n_estimators=n_estimators, max_depth=30, random_state=2)
-    r2_score = np.mean(cross_val_score(model, X_train, y_train, cv=10, scoring='r2'))
-    mse_score = np.mean(cross_val_score(model, X_train, y_train, cv=10, scoring='neg_mean_squared_error'))*-1    
-    print('[MSE]: %.3f' % mse_score)
-    print('[R2]: %.3f' % r2_score)  
+    get_10cv_score(model, X_train, y_train)
 
 def cross_val_Lin(X_train, y_train):
     print "+++Linear regression"
-    model = linear_model.LinearRegression()
-    r2_score = np.mean(cross_val_score(model, X_train, y_train, cv=10, scoring='r2'))
-    mse_score = np.mean(cross_val_score(model, X_train, y_train, cv=10, scoring='neg_mean_squared_error'))*-1    
-    print('[MSE]: %.3f' % mse_score)
-    print('[R2]: %.3f' % r2_score) 
+    model = linear_model.LinearRegression()    
+    get_10cv_score(model, X_train, y_train)
+
+def cross_val_NN(X_train, y_train, nb_epoch):
+    print "+++Shallow NN"
+    def create_net():
+        model = Sequential()  
+        model.add(Dense(128, activation='relu', input_dim=X_train.shape[1]))  
+        model.add(Dense(128, activation='relu'))    
+        model.add(Dense(1))     
+        model.compile(loss='mean_squared_error', optimizer='adam')    
+        return model
+    model = KerasRegressor(build_fn=create_net, epochs=nb_epoch, batch_size=16, shuffle=True, verbose=0)
+    get_10cv_score(model, X_train, y_train)
+
+
+
+
+
+
 
 

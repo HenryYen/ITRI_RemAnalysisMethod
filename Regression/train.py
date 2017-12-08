@@ -17,9 +17,9 @@ path = './data'
 fn_train_data = path + '/MDT.csv'
 fn_model = 'model1'
 
-train_data_size = 300
+train_data_size = 500
 test_data_size = 3000
-nb_epoch = 200
+nb_epoch = 30
 nb_feature = 11         # feature : x, y
 is_multioutput = False  # (single-output target:serving Rx) / (multi-output target:serving Rx+neighbor Rx)
 

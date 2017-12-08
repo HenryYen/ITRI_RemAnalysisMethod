@@ -40,6 +40,17 @@ def init_few_fix_evenly_user():       # Scenario : User reports are very few and
             mylist.append( User(getID('user'), x, y) )
     return mylist     
     
+def init_nonuniform_user():
+    mylist = []
+    for _ in range(300):
+        flag = True
+        while flag:        
+            x = rd.uniform(0, pr.map_size[0])
+            y = rd.uniform(0, pr.map_size[1])
+            if get_dist(x, y, 35, 13)<10 or get_dist(x, y, 70, 13)<10:
+                mylist.append( User(getID('user'), x, y) )
+                flag = False        
+    return mylist     
 
 def begin():
     cm = init_cell()

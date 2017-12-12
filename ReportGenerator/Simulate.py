@@ -42,6 +42,12 @@ def init_few_fix_evenly_user():       # Scenario : User reports are very few and
     
 def init_nonuniform_user():
     mylist = []
+    n_report = 300
+    x = numpy.random.normal(loc=map_size[0]/2, scale=11.5, size=n_report)
+    y = numpy.random.normal(loc=map_size[1]/2, scale=2.5, size=n_report)
+    for i in range(n_report):
+        mylist.append( User(getID('user'), x[i], y[i]) )
+    """
     for _ in range(300):
         flag = True
         while flag:        
@@ -49,7 +55,8 @@ def init_nonuniform_user():
             y = rd.uniform(0, pr.map_size[1])
             if get_dist(x, y, 35, 13)<10 or get_dist(x, y, 70, 13)<10:
                 mylist.append( User(getID('user'), x, y) )
-                flag = False        
+                flag = False  
+    """
     return mylist     
 
 def begin():

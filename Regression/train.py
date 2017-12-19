@@ -15,22 +15,24 @@ from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_val
     
 path = './data'
 fn_train_data = path + '/MDT.csv'
+fn_test_data = path + '/MDT_testset.csv'
 fn_model = 'model1'
 
 train_data_size = 500
 test_data_size = 3000
-nb_epoch = 30
+nb_epoch = 500
 nb_feature = 11         # feature : x, y
 is_multioutput = False  # (single-output target:serving Rx) / (multi-output target:serving Rx+neighbor Rx)
 
 
-def load_train_data():
+def load_data():
     tail = None if is_multioutput else -1
-    dataset = pd.read_csv(fn_train_data).values
-    X_train = dataset[:train_data_size, 1:1+nb_feature]     
-    y_train = dataset[:train_data_size, -2:tail]   
-    X_test = dataset[train_data_size:train_data_size+test_data_size, 1:1+nb_feature]   
-    y_test = dataset[train_data_size:train_data_size+test_data_size, -2:tail]  
+    dataset_train = pd.read_csv(fn_train_data).values
+    dataset_test = pd.read_csv(fn_test_data).values
+    X_train = dataset_train[:train_data_size, 1:1+nb_feature]     
+    y_train = dataset_train[:train_data_size, -2:tail]   
+    X_test = dataset_test[:test_data_size, 1:1+nb_feature]   
+    y_test = dataset_test[:test_data_size, -2:tail]  
     if not is_multioutput: 
         y_train = np.ravel(y_train)
         y_test = np.ravel(y_test)
@@ -97,7 +99,7 @@ def add_constant(X):
 if __name__ == '__main__':
     try:
         print '***load data...'
-        (X_train, y_train, X_test, y_test) = load_train_data()    
+        (X_train, y_train, X_test, y_test) = load_data()    
     
 
         print '***begin to train...'        

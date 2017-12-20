@@ -4,6 +4,7 @@ from User import *
 from Utility import get_dist, generate_scenario, getID, get_pathloss, write_csv, draw_system
 import pickle as pk
 import random as rd
+import numpy as np
     
     
 def init_cell():
@@ -40,11 +41,20 @@ def init_few_fix_evenly_user():       # Scenario : User reports are very few and
             mylist.append( User(getID('user'), x, y) )
     return mylist     
     
-def init_nonuniform_user():
+def init_nonuniform_user():   # non-uniform spatial distribution of user report
     mylist = []
-    n_report = 300
-    x = numpy.random.normal(loc=map_size[0]/2, scale=11.5, size=n_report)
-    y = numpy.random.normal(loc=map_size[1]/2, scale=2.5, size=n_report)
+    map_size = pr.map_size
+    n_report = 500
+    distribution = 'gaussian'    # non-uniform distribution : gaussian/ laplace/ triangular
+    if distribution == 'gaussian':
+        x = np.random.normal(loc=map_size[0]/2, scale=19.5, size=n_report)  #11.5
+        y = np.random.normal(loc=map_size[1]/2, scale=5.5, size=n_report)   #2.5
+    elif distribution == 'laplace':
+        x = np.random.laplace(loc=map_size[0]/2, scale=14.5, size=n_report)
+        y = np.random.laplace(loc=map_size[1]/2, scale=5.5, size=n_report)
+    elif distribution == 'triangular':
+        x = np.random.triangular(left=0, mode=rd.uniform(0, map_size[0]), right=map_size[0], size=n_report)
+        y = np.random.triangular(left=0, mode=rd.uniform(0, map_size[1]), right=map_size[1], size=n_report)
     for i in range(n_report):
         mylist.append( User(getID('user'), x[i], y[i]) )
     """
@@ -58,6 +68,7 @@ def init_nonuniform_user():
                 flag = False  
     """
     return mylist     
+
 
 def begin():
     cm = init_cell()

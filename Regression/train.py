@@ -14,7 +14,7 @@ from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_val
 
     
 path = './data'
-fn_train_data = path + '/MDT_nonuniform_gaussian500.csv'
+fn_train_data = path + '/MDT.csv'
 fn_test_data = path + '/MDT_testset.csv'
 fn_model = 'model1'
 
@@ -107,8 +107,8 @@ if __name__ == '__main__':
         #model = build_sNN_model(X_train, y_train)       
         #model.save(fn_model)             
         #model = build_DTReg_model(X_train, y_train)
-        #model = build_RFReg_model(X_train, y_train)
-        model = build_LinReg_model_sk(X_train, y_train, X_test)         
+        model = build_RFReg_model(X_train, y_train)
+        #model = build_LinReg_model_sk(X_train, y_train, X_test)         
         #model = build_LinReg_model_sm(X_train, y_train, X_test)         
         #model = build_LinReg_model_numpy(X_train, y_train, X_test)  
         #y_pred = np.dot(X_test, model)      # only for numpy linear reg
@@ -122,7 +122,7 @@ if __name__ == '__main__':
         
         #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
         #draw_importance_forest(model, nb_feature)
-        draw_heatmap(model, nb_feature)
+        #draw_heatmap(model, nb_feature)
         #draw_bitmap(X_train)        
         #cross_val_RF(X_train, y_train) 
         #cross_val_Lin(X_train, y_train)   

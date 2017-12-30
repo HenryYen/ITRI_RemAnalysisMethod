@@ -11,6 +11,7 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 #import statsmodels.api as sm
 from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_val_RF, cross_val_Lin, cross_val_NN
+import time
 
     
 path = './data'
@@ -23,6 +24,7 @@ test_data_size = 3000
 nb_epoch = 500
 nb_feature = 11         # feature : x, y
 is_multioutput = False  # (single-output target:serving Rx) / (multi-output target:serving Rx+neighbor Rx)
+begin_time = end_time = 0
 
 
 def load_data():
@@ -94,6 +96,8 @@ def add_constant(X):
     X = np.append(X, constant, axis=1)
     return X
     
+def get_traintime():
+	return end_time - begin_time
     
     
 if __name__ == '__main__':
@@ -102,7 +106,8 @@ if __name__ == '__main__':
         (X_train, y_train, X_test, y_test) = load_data()   
 
 
-        print '***begin to train...'        
+        print '***begin to train...'
+        begin_time = time.time()        
         #model = build_dNN_model(X_train, y_train)  
         #model = build_sNN_model(X_train, y_train)       
         #model.save(fn_model)             
@@ -112,14 +117,15 @@ if __name__ == '__main__':
         #model = build_LinReg_model_sm(X_train, y_train, X_test)         
         #model = build_LinReg_model_numpy(X_train, y_train, X_test)  
         #y_pred = np.dot(X_test, model)      # only for numpy linear reg
+        end_time = time.time()
         
         
         y_pred = model.predict(X_test)
         print "---%s Model--- %s features" %(('Multi-output' if is_multioutput else 'Single-output'), nb_feature)
-        print("[MSE]: %.3f" % mean_squared_error(y_test, y_pred))
-        print('[R2]: %.3f' % r2_score(y_test, y_pred)) 
-        #print y_pred[:10]
-        
+        print "[MSE]: %.3f" % mean_squared_error(y_test, y_pred)
+        print '[R2]: %.3f' % r2_score(y_test, y_pred)
+        print '[Training time] : %.3f' % get_traintime()
+        #print y_pred[:10]        
         #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
         #draw_importance_forest(model, nb_feature)
         #draw_heatmap(model, nb_feature)

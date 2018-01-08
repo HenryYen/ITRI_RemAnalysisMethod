@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import psutil as ps
+import os
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation
 from keras.optimizers import Adam
@@ -101,6 +103,7 @@ def get_traintime():
     
     
 if __name__ == '__main__':
+    myProcess = ps.Process(os.getpid())
     try:
         print '***load data...'
         (X_train, y_train, X_test, y_test) = load_data()   
@@ -116,7 +119,7 @@ if __name__ == '__main__':
         #model = build_LinReg_model_sk(X_train, y_train, X_test)         
         #model = build_LinReg_model_sm(X_train, y_train, X_test)         
         #model = build_LinReg_model_numpy(X_train, y_train, X_test)  
-        #y_pred = np.dot(X_test, model)      # only for numpy linear reg
+        #y_pred = np.dot(X_test, model)      # only for numpy linear reg 
         end_time = time.time()
         
         
@@ -124,7 +127,8 @@ if __name__ == '__main__':
         print "---%s Model--- %s features" %(('Multi-output' if is_multioutput else 'Single-output'), nb_feature)
         print "[MSE]: %.3f" % mean_squared_error(y_test, y_pred)
         print '[R2]: %.3f' % r2_score(y_test, y_pred)
-        print '[Training time] : %.3f' % get_traintime()
+        print '[Training time] : %.3f' % get_traintime()   
+        print '[Memory] : %.3f' % (myProcess.memory_info()[0]/2.**20)  # RSS in MB
         #print y_pred[:10]        
         #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
         #draw_importance_forest(model, nb_feature)
@@ -132,8 +136,8 @@ if __name__ == '__main__':
         #draw_bitmap(X_train)        
         #cross_val_RF(X_train, y_train) 
         #cross_val_Lin(X_train, y_train)   
-        #cross_val_NN(X_train, y_train, nb_epoch)     
-    
+        #cross_val_NN(X_train, y_train, nb_epoch)   
+        
     except KeyboardInterrupt:           
         model.save(fn_model)
 

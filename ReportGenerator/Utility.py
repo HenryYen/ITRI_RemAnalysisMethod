@@ -63,12 +63,15 @@ def draw_system(cm, um):
     for u in um:
         color_no = 1
         #if min([get_dist(u.x, u.y, c.x, c.y) for c in cm]) > 10:
-        plt.plot(u.x, u.y, color = color[color_no], marker='o')  
+        plt.plot(u.x, u.y, color = color[color_no], marker='.')  
     
+    img = plt.imread("./pic/51_5F.jpg")
+    plt.imshow(img, zorder=0, extent=[0, 104, 0, 26])
     plt.axis([0, pr.map_size[0], 0, pr.map_size[1]])
     plt.xlabel('x')
     plt.ylabel('y')
     plt.title('System Overview')
+    plt.savefig('./pic/overview.png', dpi=200)
     plt.show()
 
 

@@ -27,7 +27,6 @@ def load_pixel_data(nb_feature):
 
 
 def draw_heatmap(model, nb_feature):     # specialized drawing function for ITRI building 51
-    plt.figure(0)
     x_resolution = map_size[0]
     y_resolution = map_size[1]
     xaxis = np.linspace(0., x_resolution, x_resolution+1)   # why +1? there are 105 point between 0~104
@@ -49,25 +48,20 @@ def draw_heatmap(model, nb_feature):     # specialized drawing function for ITRI
 
 
 def draw_bitmap(X_train):          # draw the location distribution of user reports
-    """   make background grid
     fig, ax = plt.subplots()
     plt.axis([0, map_size[0], 0, map_size[1]])
     minorLocator = MultipleLocator(1)   #spacing of grid : 1 unit
     ax.yaxis.set_minor_locator(minorLocator)
     ax.xaxis.set_minor_locator(minorLocator)
-    """
-    plt.figure(1)
+
     for i in range(len(X_train)):        
-        plt.plot(round(X_train[i][0])+0.5, round(X_train[i][1])+0.5, color='b', marker='2')  #shift x, y by 0.5 unit
-    #plt.grid(which = 'minor', color='black', linestyle='-', linewidth=0.5)
-    img = plt.imread("./pic/51_5F.jpg")
-    plt.imshow(img, zorder=0, extent=[0, map_size[0], 0, map_size[1]])
+        plt.plot(round(X_train[i][0])+0.5, round(X_train[i][1])+0.5, color='b', marker='.')  #shift x, y by 0.5 unit
+    plt.grid(which = 'minor', color='black', linestyle='-', linewidth=0.5)
     plt.xlabel('x')
     plt.ylabel('y')
     plt.title('Location of user report')
     plt.savefig('bitmap.png', dpi=200)
     plt.show()
-    
 
 def draw_importance_forest(model, feature_no):   #draw feature importance of forest
     print model.feature_importances_ 

@@ -107,6 +107,8 @@ if __name__ == '__main__':
     try:
         print '***load data...'
         (X_train, y_train, X_test, y_test) = load_data()   
+        #X_train = np.array([[12.4,12], [48.4,12], [45.4,22], [63.4,22], [57.4,12], [68.4,6], [81.4,12], [94.4,12], [100.4,15]])       
+        #y_train = np.array([-104.8536424, -91.61650485, -124.3307692, -118.6451613, -94.73464912, -92.54813084, -82.44324324, -89.7811828, -114.5])
 
         print '***begin to train...'
         begin_time = time.time()        
@@ -129,6 +131,7 @@ if __name__ == '__main__':
         print '[Training time] : %.3f' % get_traintime()   
         print '[Memory] : %.3f' % (myProcess.memory_info()[0]/2.**20)  # RSS in MB
         #print y_pred[:10]        
+        #print('[ExplainVariance]: %.3f' % explained_variance_score(y_test, y_pred))
         #draw_importance_forest(model, nb_feature)
         #draw_heatmap(model, nb_feature)
         #draw_bitmap(X_train)        

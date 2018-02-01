@@ -43,38 +43,29 @@ def init_few_fix_evenly_user():       # Scenario : User reports are very few and
     
 def init_nonuniform_user():   # non-uniform spatial distribution of user report
     mylist = []
-    map_size = pr.map_size
     n_report = 500
+    n_room = 4
+    center = [[27, 6], [30, 19], [70, 6], [79, 19]]   #room1~4 : left-bottom, left-up, right-bottom, right-up.
+    variance = [[9, 2.2], [8, 2.2], [9.5, 2.2], [7, 2.2]]
     distribution = 'gaussian'    # non-uniform distribution : gaussian/ laplace/ triangular
     if distribution == 'gaussian':
-        x = np.random.normal(loc=map_size[0]/2, scale=19.5, size=n_report)  #11.5
-        y = np.random.normal(loc=map_size[1]/2, scale=5.5, size=n_report)   #2.5
-    elif distribution == 'laplace':
-        x = np.random.laplace(loc=map_size[0]/2, scale=14.5, size=n_report)
-        y = np.random.laplace(loc=map_size[1]/2, scale=5.5, size=n_report)
-    elif distribution == 'triangular':
-        x = np.random.triangular(left=0, mode=rd.uniform(0, map_size[0]), right=map_size[0], size=n_report)
-        y = np.random.triangular(left=0, mode=rd.uniform(0, map_size[1]), right=map_size[1], size=n_report)
-    for i in range(n_report):
-        mylist.append( User(getID('user'), x[i], y[i]) )
-    """
-    for _ in range(300):
-        flag = True
-        while flag:        
-            x = rd.uniform(0, pr.map_size[0])
-            y = rd.uniform(0, pr.map_size[1])
-            if get_dist(x, y, 35, 13)<10 or get_dist(x, y, 70, 13)<10:
-                mylist.append( User(getID('user'), x, y) )
-                flag = False  
-    """
-    return mylist     
+        # Naive Method:
+        # x = np.random.normal(loc=rd.uniform(35, 70), scale=rd.uniform(18, 23), size=n_report) 
+        # y = np.random.normal(loc=rd.uniform(8, 17), scale=rd.uniform(4, 8), size=n_report) 
+        for i in range(n_room):
+            n_per_room = n_report/ n_room
+            x = np.random.normal(loc=center[i][0], scale=variance[i][0], size=n_per_room)  
+            y = np.random.normal(loc=center[i][1], scale=variance[i][1], size=n_per_room)
+            for j in range(n_per_room):
+                mylist.append( User(getID('user'), x[j], y[j]) )
+    return mylist        
 
 
 def begin():
     cm = init_cell()
     um = init_user()
     reportset = []
-       
+    abnormal_cnt = 0   
         
     for u in um:
         #↓↓ This scope finds the first N closest small cells to user u.
@@ -99,7 +90,13 @@ def begin():
             #PL = get_pathloss(u, c)            
             #print '/ PathLoss between User %d & Cell %d = %d' % (um.index(u), cm.index(c), PL)
             #print '\ RSRP of User %d from Cell %d = %d' % (um.index(u), cm.index(c), u.get_rxpower(c)) 
-                
+        """
+        abnormal_cnt += 1
+        abnormal_ratio = 0.1
+        deviation = rd.uniform(10, 25) if abnormal_cnt <= pr.user_no*abnormal_ratio else 0      # deviation of AUE is between (5,25)
+        user_id = int((abnormal_cnt-1)/(pr.user_no*abnormal_ratio))
+        per_report = [user_id, u.x, u.y, serve_rx - deviation, neighbor_rx - deviation]
+        """
         per_report = [u.ID, u.x, u.y, serve_rx, neighbor_rx]
         cell_info = []
         for c in closest_N_cell:
@@ -109,7 +106,7 @@ def begin():
         #print u.ID, u.x, u.y, serve_id, serve_rx, neighbor_id, neighbor_rx
         #print ' '
     write_csv(reportset)
-    #draw_system(cm, um[:500])
+    #draw_system(cm, um)
 
 
 

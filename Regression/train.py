@@ -6,9 +6,9 @@ from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation
 from keras.optimizers import Adam
 from sklearn import linear_model
-from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
+from sklearn.gaussian_process.kernels import RBF, WhiteKernel
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 #import statsmodels.api as sm
@@ -79,7 +79,7 @@ def build_RFReg_model(X_train, y_train):
     return model
 
 
-def build_LinReg_model_sk(X_train, y_train, X_test): 
+def build_LinReg_model_sk(X_train, y_train): 
     print "+++Linear regression"
     model = linear_model.LinearRegression()
     model.fit(X_train, y_train)   
@@ -92,12 +92,19 @@ def build_LinReg_model_sm(X_train, y_train, X_test):
 def build_LinReg_model_numpy(X_train, y_train, X_test): 
     X_train = add_constant(X_train)
     model = np.linalg.lstsq(X_train,y_train)[0]
-    return model    
+    return model  
+def build_kriging(X_train, y_train): 
+    print "+++Kriging"
+    kernel = 1.0 * RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e3)) \
+        + WhiteKernel(noise_level=1e-5, noise_level_bounds=(1e-10, 1e+1))
+    model = GaussianProcessRegressor(kernel=kernel, alpha=0.0)
+    model.fit(X_train, y_train)   
+    return model  
 def add_constant(X):
     constant = np.array([[1]] * len(X))
     X = np.append(X, constant, axis=1)
     return X
-    
+
 def get_traintime():
 	return end_time - begin_time
     
@@ -111,14 +118,11 @@ if __name__ == '__main__':
         print '***begin to train...'
         begin_time = time.time()        
         #model = build_dNN_model(X_train, y_train)  
-        #model = build_sNN_model(X_train, y_train)       
-        #model.save(fn_model)             
+        #model = build_sNN_model(X_train, y_train)    
         #model = build_DTReg_model(X_train, y_train)
         model = build_RFReg_model(X_train, y_train)
-        #model = build_LinReg_model_sk(X_train, y_train, X_test)         
-        #model = build_LinReg_model_sm(X_train, y_train, X_test)         
-        #model = build_LinReg_model_numpy(X_train, y_train, X_test)  
-        #y_pred = np.dot(X_test, model)      # only for numpy linear reg 
+        #model = build_LinReg_model_sk(X_train, y_train)   	
+        #model = build_kriging(X_train, y_train)  
         end_time = time.time()
         
         

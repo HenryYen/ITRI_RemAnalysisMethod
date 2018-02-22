@@ -10,7 +10,8 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, WhiteKernel
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.neighbors import KNeighborsRegressor
 #import statsmodels.api as sm
 from Utility import draw_heatmap, draw_bitmap, draw_importance_forest, cross_val_RF, cross_val_Lin, cross_val_NN
 import time
@@ -77,8 +78,19 @@ def build_RFReg_model(X_train, y_train):
     model = RandomForestRegressor(n_estimators=n_estimators, max_depth=30, random_state=2)
     model.fit(X_train, y_train)   
     return model
+def build_GBTReg_model(X_train, y_train):
+    n_estimators = 100
+    print "+++GradientBoosting consisting of " + str(n_estimators) + " trees"
+    model = GradientBoostingRegressor(n_estimators=n_estimators, max_depth=30, random_state=2)
+    model.fit(X_train, y_train)   
+    return model
 
 
+def build_knn_model(X_train, y_train):
+    print "+++KNN"
+    model = KNeighborsRegressor(n_neighbors=3, weights='uniform')
+    model.fit(X_train, y_train)
+    return model
 def build_LinReg_model_sk(X_train, y_train): 
     print "+++Linear regression"
     model = linear_model.LinearRegression()
@@ -121,6 +133,8 @@ if __name__ == '__main__':
         #model = build_sNN_model(X_train, y_train)    
         #model = build_DTReg_model(X_train, y_train)
         model = build_RFReg_model(X_train, y_train)
+        #model = build_GBTReg_model(X_train, y_train)
+        #model = build_knn_model(X_train, y_train)
         #model = build_LinReg_model_sk(X_train, y_train)   	
         #model = build_kriging(X_train, y_train)  
         end_time = time.time()
@@ -129,6 +143,7 @@ if __name__ == '__main__':
         y_pred = model.predict(X_test)
         print "---%s Model--- %s features" %(('Multi-output' if is_multioutput else 'Single-output'), nb_feature)
         print "[MSE]: %.3f" % mean_squared_error(y_test, y_pred)
+        print "[RMSE]: %.3f" % mean_squared_error(y_test, y_pred)**(0.5)
         print '[R2]: %.3f' % r2_score(y_test, y_pred)
         print '[Training time] : %.3f' % get_traintime()   
         print '[Memory] : %.3f' % (myProcess.memory_info()[0]/2.**20)  # RSS in MB

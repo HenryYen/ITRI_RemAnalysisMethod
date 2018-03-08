@@ -75,13 +75,13 @@ def build_DTReg_model(X_train, y_train):
 def build_RFReg_model(X_train, y_train):
     n_estimators = 100
     print "+++Random Forest consisting of " + str(n_estimators) + " trees"
-    model = RandomForestRegressor(n_estimators=n_estimators, max_depth=30, random_state=2)
+    model = RandomForestRegressor(n_estimators=n_estimators, max_depth=30, max_features='auto')
     model.fit(X_train, y_train)   
     return model
 def build_GBTReg_model(X_train, y_train):
     n_estimators = 100
     print "+++GradientBoosting consisting of " + str(n_estimators) + " trees"
-    model = GradientBoostingRegressor(n_estimators=n_estimators, max_depth=30, random_state=2)
+    model = GradientBoostingRegressor(n_estimators=n_estimators, max_depth=3, learning_rate=0.1)
     model.fit(X_train, y_train)   
     return model
 

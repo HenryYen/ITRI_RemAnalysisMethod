@@ -45,8 +45,8 @@ def init_nonuniform_user():   # non-uniform spatial distribution of user report
     mylist = []
     n_room = 4
     n_per_room = [120, 120, 120, 119]
-    center = [[27, 6], [30, 19], [70, 6], [79, 19]]   #room1~4 : left-bottom, left-up, right-bottom, right-up.
-    variance = [[9, 2.2], [8, 2.2], [9.5, 2.2], [7, 2.2]]
+    center = [[28, 6], [30, 19], [70, 6], [79, 19]]   #room1~4 : left-bottom, left-up, right-bottom, right-up.
+    variance = [[8, 2.2], [9, 2.2], [9.5, 2.2], [7, 2.2]]
     for i in range(n_room):
         x = np.random.normal(loc=center[i][0], scale=variance[i][0], size=n_per_room[i])  
         y = np.random.normal(loc=center[i][1], scale=variance[i][1], size=n_per_room[i])
@@ -62,13 +62,13 @@ def begin():
     #abnormal_cnt = 0   
         
     for u in um:
-        #↓↓ This scope finds the first N closest small cells to user u.
+        #Below scope finds the first N closest small cells to user u.
         closest_N_cell = sorted(cm, key=lambda c: get_dist(u.x, u.y, c.x, c.y))[:pr.closest_N_cell_no]   # index0:closest, index1:second close, index2:third close
         #print ','.join([c.__str__() for c in closest_N_cell])
         #print ','.join([str(get_dist(u.x, u.y, c.x, c.y)) for c in closest_N_cell])
                     
                 
-        #↓↓ This scope aims at finding the serving/neighbor Rx power of specific user u. 
+        #Below scope aims at finding the serving/neighbor Rx power of specific user u. 
         serve_id = neighbor_id = None
         serve_rx = neighbor_rx = float('-inf')
         for c in cm:

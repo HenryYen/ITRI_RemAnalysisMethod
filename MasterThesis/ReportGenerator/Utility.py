@@ -3,9 +3,11 @@ from Cell import *
 from User import *
 import random as rd
 from math import sqrt, pi, degrees, atan2, log, pow
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import pickle as pk
-
+import numpy as np
 
 
 
@@ -16,7 +18,8 @@ def get_dist(x1, y1, x2, y2):
 def get_pathloss(c, u):  # argument:cell, user    # (db),  path loss = a * log10(d) + b + c * log10(fc) = 16.9 * log10(d) + 32.8 + 20 * log10(fc)
         dist = get_dist(u.x, u.y, c.x, c.y)
         dist = pr.ref_dist if dist < pr.ref_dist else dist
-        return pr.a * log(dist, 10) + pr.b + pr.c * log(pr.fc, 10)
+        #fading = float(np.random.normal(loc=3.5, scale=2, size=1))
+        return pr.a * log(dist, 10) + pr.b + pr.c * log(pr.fc, 10) 
 
 
 def getID(type):

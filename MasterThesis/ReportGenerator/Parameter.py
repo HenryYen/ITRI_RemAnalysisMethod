@@ -28,7 +28,7 @@ header = ['id','location_id','user_x','user_y'] + ['cell_x', 'cell_y', 'cell_pow
 path = './data'
 fn_pos_random = path + '/pos_rd.pkl'    # [ [(cell1_x, cell1_y, cell1_power), (cell2_x, cell2_y, cell2_power)...], [(user1_x, user1_y), (user2_x, user2_y)...] ]
 fn_pos_fixed = path + '/pos_fix.pkl'    # 4 small cells in ITRI building 51 :  [[(24.377, 11.978, 19), (51.446, 17.966, 19), (69.175, 11.247, 19), (82.947, 18.112, 19)], []]
-fn_output = path + '/MDT.csv'
+fn_output = path + '/MDT_noise.csv'
 
 
 #--------------------------------------------------------------------------------

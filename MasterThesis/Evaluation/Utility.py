@@ -59,7 +59,7 @@ def draw_bitmap(X_train):          # draw the location distribution of user repo
     """
     plt.figure(1)
     for i in range(len(X_train)):        
-        plt.plot(round(X_train[i][0])+0.5, round(X_train[i][1])+0.5, color='g', marker='2')  #shift x, y by 0.5 unit
+        plt.plot(X_train[i][0], X_train[i][1], color='g', marker='.', markersize=2)  #shift x, y by 0.5 unit
     #plt.grid(which = 'minor', color='black', linestyle='-', linewidth=0.5)
     img = plt.imread("./pic/51_5F.jpg")
     plt.imshow(img, zorder=0, extent=[0, map_size[0], 0, map_size[1]])
